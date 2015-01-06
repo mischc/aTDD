@@ -8,6 +8,16 @@ from lists.models import Item
 
 class HomePageTest(TestCase):
     
+    def test_home_page_displays_all_list_items(self):
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        request = HttpRequest()
+        response = home_page(request)
+
+        self.assertIn('itemey 1', response.content.decode())
+        self.assertIn('itemey 2', response.content.decode())
+        
     def test_root_url_resolves_to_home_page_view(self):
         found = resolve('/')
         self.assertEqual(found.func, home_page)
