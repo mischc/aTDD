@@ -45,7 +45,7 @@ class ListAndItemModelsTest(TestCase):
         self.assertEqual(first_saved_item.text, 'The first (ever) list item')
         self.assertEqual(first_saved_item.list, list_)
         self.assertEqual(second_saved_item.text, 'Item the second')
-        self.assertEQual(secon_saved_item.list, list_)
+        self.assertEqual(second_saved_item.list, list_)
 
 class ListViewTest(TestCase):
 
@@ -54,8 +54,9 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'list.html')
         
     def test_displays_all_items(self):
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
+        list_ = List.objects.create()
+        Item.objects.create(text='itemey 1', list=list_)
+        Item.objects.create(text='itemey 2', list=list_)
 
         response = self.client.get('/lists/the-only-list-in-the-world/')
 
@@ -73,11 +74,12 @@ class NewListTest(TestCase):
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
 
-    def test_redirects_after_POST (self):
+    def test_redirects_after_POST(self):
         response = self.client.post(
             '/lists/new',
             data={'item_text': 'A new list item'}
         )      
+        new_list = List.objects.first()
         self.assertRedirects(response,  '/lists/the-only-list-in-the-world/')
 
         
